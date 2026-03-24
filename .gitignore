@@ -1,0 +1,8 @@
+.DS_Store
+*.log
+*.o
+*.exe
+*.d
+doom
+doomx
+linuxxdoom
