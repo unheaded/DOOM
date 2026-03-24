@@ -1,23 +1,54 @@
-# DOOM for Unheaded Protocol Computer (UPC)
+# DOOM
 
-This is a fork of id Software's DOOM source code (1997) adapted to run on the **Unheaded Protocol Computer (UPC)** — a virtual CPU that executes game logic via IPv6 packets processed by eBPF programs.
+> Fork of [id-Software/DOOM](https://github.com/id-Software/DOOM) — reference source for the [Unheaded Protocol Computer (UPC)](https://github.com/unheaded/unheaded)
 
-## Original Source
+This is id Software's original DOOM source code (released 1997 under GPL-2.0), preserved as reference material for the Unheaded project. The source is unmodified — all UPC integration work lives in the companion [doomgeneric](https://github.com/unheaded/doomgeneric) repository.
 
-- **Original Repository:** https://github.com/id-Software/DOOM
-- **License:** GPL-2.0 (same as original)
-- **Credit:** id Software and John Carmack
+## Why This Fork Exists
 
-## Purpose
+The Unheaded Protocol Computer runs DOOM compiled to MBC bytecode inside eBPF/XDP programs. The compilation pipeline starts here:
 
-This fork enables DOOM to run as game logic executed within the UPC's packet-based computational environment. The original DOOM source code structure is preserved to maintain compatibility and reference value.
+```
+This repo (original C source)
+    │
+    ▼  doomgeneric platform layer + libc stubs
+    │
+doomgeneric repo (portable DOOM + UPC integration)
+    │
+    ▼  riscv64-unknown-elf-gcc -march=rv32i
+    │
+doom.elf (RISC-V 32-bit ELF)
+    │
+    ▼  rv32i_to_mbc (Rust translator)
+    │
+doom.mbc → loaded into BPF maps → executed by XDP programs
+```
 
-## Main Project
+This fork preserves the original source as the canonical reference. See [doomgeneric](https://github.com/unheaded/doomgeneric) for the actual UPC integration, build pipeline, and running DOOM over IPv6.
 
-For more information about the Unheaded Protocol and the UPC architecture, see the main project repository:
+## Directory Structure
 
-https://github.com/unheaded/unheaded
+| Directory | Contents |
+|:---|:---|
+| `linuxdoom-1.10/` | The DOOM engine — renderer, game logic, networking, sound |
+| `sndserv/` | Sound server (separate process, IPC to game) |
+| `sersrc/` | Serial/modem driver for multiplayer |
+| `ipx/` | IPX network driver for multiplayer |
 
-## Original README
+## Original Documentation
 
-The original DOOM source release documentation is available in `README.TXT`.
+The original release notes from id Software are in [README.TXT](README.TXT).
+
+## Related Repositories
+
+- **[unheaded/doomgeneric](https://github.com/unheaded/doomgeneric)** — portable DOOM engine + UPC integration (Go, eBPF, MBC bytecode, browser viewer)
+- **[unheaded/unheaded](https://github.com/unheaded/unheaded)** — the Unheaded Protocol — full protocol stack and compute platform
+
+## License
+
+GPL-2.0 — see [LICENSE.TXT](LICENSE.TXT)
+
+## Credits
+
+- **id Software** / **John Carmack** — original DOOM engine (1993, GPL release 1997)
+- **[Unheaded](https://github.com/unheaded)** — UPC adaptation
